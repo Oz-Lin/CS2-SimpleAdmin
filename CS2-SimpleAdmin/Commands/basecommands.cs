@@ -418,7 +418,7 @@ public partial class CS2_SimpleAdmin
 
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/kick")]
-    public void OnHideCommand(CCSPlayerController? caller, CommandInfo command)
+    public void OnStealthCommand(CCSPlayerController? caller, CommandInfo command)
     {
         if (caller == null) return;
 
