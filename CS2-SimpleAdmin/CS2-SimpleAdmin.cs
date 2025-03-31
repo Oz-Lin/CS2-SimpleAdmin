@@ -57,15 +57,6 @@ public partial class CS2_SimpleAdmin : BasePlugin, IPluginConfig<CS2_SimpleAdmin
     {
         AddTimer(5.0f, () => ReloadAdmins(null));
 
-        try
-        {
-            MenuApi = MenuCapability.Get();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError("Unable to load required plugins ... \n{exception}", ex.Message);
-        }
-        
         RegisterCommands.InitializeCommands();
     }
 
