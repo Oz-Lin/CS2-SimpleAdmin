@@ -224,9 +224,6 @@ public class PlayerManager
     {   
         CS2_SimpleAdmin.Instance.AddTimer(61.0f, () =>
         {
-            #if DEBUG
-            CS2_SimpleAdmin._logger?.LogCritical("[OnMapStart] Expired check");
-            #endif
             if (CS2_SimpleAdmin.Database == null)
                 return;
             

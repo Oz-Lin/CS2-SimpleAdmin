@@ -68,16 +68,9 @@ public partial class CS2_SimpleAdmin
 
         var player = @event.Userid;
 
-#if DEBUG
-        Logger.LogCritical("[OnClientDisconnect] Before");
-#endif
-
         if (player == null || !player.IsValid || player.IsBot)
             return HookResult.Continue;
 
-#if DEBUG
-        Logger.LogCritical("[OnClientDisconnect] After Check");
-#endif
         try
         {
             if (DisconnectedPlayers.Count >= Config.OtherSettings.DisconnectedPlayersHistoryCount)
@@ -132,10 +125,7 @@ public partial class CS2_SimpleAdmin
     
     private void OnClientConnect(int playerslot, string name, string ipaddress)
     {
-#if DEBUG
-        Logger.LogCritical("[OnClientConnect]");
-#endif
-        if (!CS2_SimpleAdmin.BannedPlayers.Contains(ipaddress.Split(":")[0]))
+        if (!BannedPlayers.Contains(ipaddress.Split(":")[0]))
             return;
 
         Server.NextFrame((() =>
@@ -161,18 +151,14 @@ public partial class CS2_SimpleAdmin
     [GameEventHandler]
     public HookResult OnPlayerFullConnect(EventPlayerConnectFull @event, GameEventInfo info)
     {
-#if DEBUG
-        Logger.LogCritical("[OnPlayerFullConnect]");
-#endif
-
         var player = @event.Userid;
 
         if (player == null || !player.IsValid || player.IsBot)
             return HookResult.Continue;
 
-//         if (player.UserId.HasValue && PlayersInfo.TryGetValue(player.UserId.Value, out PlayerInfo? value) &&
-// value.WaitingForKick)
-//             return HookResult.Continue;
+        //         if (player.UserId.HasValue && PlayersInfo.TryGetValue(player.UserId.Value, out PlayerInfo? value) &&
+        // value.WaitingForKick)
+        //             return HookResult.Continue;
         
         new PlayerManager().LoadPlayerData(player);
 
@@ -182,10 +168,6 @@ public partial class CS2_SimpleAdmin
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
-#if DEBUG
-        Logger.LogCritical("[OnRoundStart]");
-#endif
-
         GodPlayers.Clear();
         
         foreach (var player in PlayersInfo.Values)
