@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Entities;
@@ -57,22 +58,59 @@ public static class ManageServerMenu
 
     private static void ChangeMapMenu(CCSPlayerController admin)
     {
-        var menu = AdminMenu.CreateMenu(CS2_SimpleAdmin._localizer?["sa_changemap"] ?? "Change Map");
-        List<ChatMenuOptionData> options = [];
+        if (admin == null || !admin.IsValid)
+            return;
 
-        var maps = CS2_SimpleAdmin.Instance.Config.DefaultMaps;
-        options.AddRange(maps.Select(map => new ChatMenuOptionData(map, () => ExecuteChangeMap(admin, map, false))));
+        string filePath = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "plugins", "RockTheVote", "maplist.txt");
+
+        var menu = AdminMenu.CreateMenu(CS2_SimpleAdmin._localizer?["sa_changemap"] ?? "Change Map");
+
+        if (File.Exists(filePath))
+        {
+            string[] lines = File.ReadAllLines(filePath);
+
+            foreach (string line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                // Expected format: "map_name (optional info):workshopID"
+                string[] parts = line.Split(':');
+                if (parts.Length < 2)
+                    continue;
+
+                string mapDisplayName = parts[0].Trim();
+                // Grab the actual map name from mapDisplayName by taking the first string before any space.
+                string workshopName = mapDisplayName.Split(' ')[0];
+
+                menu.AddItem(mapDisplayName, (player, option) =>
+                {
+                    Server.ExecuteCommand($"ds_workshop_changelevel {workshopName}");
+                });
+            }
+        }
+        else
+        {
+            admin.PrintToChat("Map list file not found at: " + filePath);
+        }
+
+        List<ChatMenuOptionData> options = new();
 
         var wsMaps = CS2_SimpleAdmin.Instance.Config.WorkshopMaps;
-        options.AddRange(wsMaps.Select(map => new ChatMenuOptionData($"{map.Key} (WS)", () => ExecuteChangeMap(admin, map.Value?.ToString() ?? map.Key, true))));
+        options.AddRange(wsMaps.Select(map => new ChatMenuOptionData(
+            $"{map.Key} (WS)",
+            () => ExecuteChangeMap(admin, map.Value?.ToString() ?? map.Key, true)
+        )));
 
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
+            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); },
+                menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
-        if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        if (menu != null)
+            AdminMenu.OpenMenu(admin, menu);
     }
 
     private static void ExecuteChangeMap(CCSPlayerController admin, string mapName, bool workshop)
