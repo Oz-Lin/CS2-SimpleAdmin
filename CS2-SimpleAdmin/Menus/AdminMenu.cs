@@ -44,9 +44,9 @@ public static class AdminMenu
         // Add menu options as needed
         List<ChatMenuOptionData> options = new List<ChatMenuOptionData>
         {
-            new ChatMenuOptionData(localizer?["sa_menu_players_manage"] ?? "Players Manage", () => ManagePlayersMenu.OpenMenu(admin)),
-            new ChatMenuOptionData(localizer?["sa_menu_server_manage"] ?? "Server Manage", () => ManageServerMenu.OpenMenu(admin)),
-            new ChatMenuOptionData(localizer?["sa_menu_fun_commands"] ?? "Fun Commands", () => FunActionsMenu.OpenMenu(admin))
+            new ChatMenuOptionData(localizer?["sa_menu_players_manage"] ?? "Manage Players", () => ManagePlayersMenu.OpenMenu(admin)),
+            new ChatMenuOptionData(localizer?["sa_menu_server_manage"] ?? "Manage Server", () => ManageServerMenu.OpenMenu(admin)),
+            //new ChatMenuOptionData(localizer?["sa_menu_fun_commands"] ?? "Fun Commands", () => FunActionsMenu.OpenMenu(admin))
         };
 
         // (Add more options as needed.)
