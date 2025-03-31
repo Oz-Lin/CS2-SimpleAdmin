@@ -221,26 +221,12 @@ public class PlayerManager
     }
 
     public void CheckPlayersTimer()
-    {
-        CS2_SimpleAdmin.Instance.AddTimer(0.1f, () =>
-        {
-            if (CS2_SimpleAdmin.GravityPlayers.Count <= 0) return;
-            
-            foreach (var value in CS2_SimpleAdmin.GravityPlayers)
-            {
-                if (value.Key is not
-                    { IsValid: true, Connected: PlayerConnectedState.PlayerConnected } && value.Key.PlayerPawn?.Value?.LifeState == (int)LifeState_t.LIFE_ALIVE)
-                    continue;
-
-                value.Key.SetGravity(value.Value);
-            }
-        }, TimerFlags.REPEAT);
-        
+    {   
         CS2_SimpleAdmin.Instance.AddTimer(61.0f, () =>
         {
-#if DEBUG
+            #if DEBUG
             CS2_SimpleAdmin._logger?.LogCritical("[OnMapStart] Expired check");
-#endif
+            #endif
             if (CS2_SimpleAdmin.Database == null)
                 return;
             
