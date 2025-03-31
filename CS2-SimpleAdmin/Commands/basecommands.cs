@@ -6,12 +6,10 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities;
-//using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 using CS2_SimpleAdmin.Managers;
 using CS2_SimpleAdmin.Menus;
 using CS2_SimpleAdminApi;
-using CS2MenuManager;
 using CS2MenuManager.API.Menu;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -181,8 +179,6 @@ public partial class CS2_SimpleAdmin
     {
         if (caller == null || caller.IsValid == false)
             return;
-            
-        //command.ReplyToCommand($" {ChatColors.Lime}[ADMIN] {ChatColors.White}This command is still a work in progress.");
 
         AdminMenu.OpenMenu(caller);
     }
