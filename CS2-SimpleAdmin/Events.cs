@@ -101,8 +101,6 @@ public partial class CS2_SimpleAdmin
 
             SilentPlayers.Remove(player.Slot);
             GodPlayers.Remove(player.Slot);
-            SpeedPlayers.Remove(player.Slot);
-            GravityPlayers.Remove(player);
 
             if (player.UserId.HasValue)
                 PlayersInfo.TryRemove(player.UserId.Value, out _);
@@ -189,8 +187,6 @@ public partial class CS2_SimpleAdmin
 #endif
 
         GodPlayers.Clear();
-        SpeedPlayers.Clear();
-        GravityPlayers.Clear();
         
         foreach (var player in PlayersInfo.Values)
         {
@@ -392,8 +388,6 @@ public partial class CS2_SimpleAdmin
 
         GodPlayers.Clear();
         SilentPlayers.Clear();
-        SpeedPlayers.Clear();
-        GravityPlayers.Clear();
 
         PlayerPenaltyManager.RemoveAllPenalties();
     }
@@ -405,9 +399,6 @@ public partial class CS2_SimpleAdmin
 
         if (player is null || @event.Attacker is null || player.PlayerPawn?.Value?.LifeState != (int)LifeState_t.LIFE_ALIVE || player.PlayerPawn.Value == null)
             return HookResult.Continue;
-
-        if (SpeedPlayers.TryGetValue(player.Slot, out var speedPlayer))
-            AddTimer(0.15f, () => player.SetSpeed(speedPlayer));
         
         if (!GodPlayers.Contains(player.Slot)) return HookResult.Continue;
 
@@ -425,8 +416,6 @@ public partial class CS2_SimpleAdmin
         if (player?.UserId == null || !player.IsValid || player.IsHLTV || player.Connected != PlayerConnectedState.PlayerConnected)
             return HookResult.Continue;
 
-        SpeedPlayers.Remove(player.Slot);
-        GravityPlayers.Remove(player);
 
         if (!PlayersInfo.ContainsKey(player.UserId.Value) || @event.Attacker == null)
             return HookResult.Continue;

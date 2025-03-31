@@ -365,13 +365,6 @@ public partial class CS2_SimpleAdmin
             ? caller.PlayerName 
             : (_localizer?["sa_console"] ?? "Console");
 
-        // Freeze player pawn if alive
-        if (player.PlayerPawn?.Value?.LifeState == (int)LifeState_t.LIFE_ALIVE)
-        {
-            player.PlayerPawn?.Value?.Freeze();
-            AddTimer(5.0f, () => player.PlayerPawn?.Value?.Unfreeze(), CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
-        }
-
         // Get player and admin information
         var playerInfo = PlayersInfo[player.UserId.Value];
         var adminInfo = caller != null && caller.UserId.HasValue ? PlayersInfo[caller.UserId.Value] : null;
