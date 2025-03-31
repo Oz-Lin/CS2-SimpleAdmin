@@ -8,6 +8,7 @@ namespace CS2_SimpleAdmin;
 
 public partial class CS2_SimpleAdmin
 {
+    /*
     [RequiresPermissions("@css/generic")]
     [CommandHelper(minArgs: 2, usage: "<question> [... options ...]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnVoteCommand(CCSPlayerController? caller, CommandInfo command)
@@ -89,4 +90,5 @@ public partial class CS2_SimpleAdmin
             }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
         }
     }
+    */
 }
