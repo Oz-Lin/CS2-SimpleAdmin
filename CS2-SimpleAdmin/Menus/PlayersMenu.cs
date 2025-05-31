@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using System.Web;
+using CS2MenuManager.API.Enum;
 
 namespace CS2_SimpleAdmin.Menus;
 
@@ -43,11 +44,11 @@ public static class PlayersMenu
             var enabled = admin.CanTarget(player);
 
             if (optionName != null)
-                menu?.AddMenuOption(optionName, (_, _) =>
+                menu?.AddItem(optionName, (_, _) =>
                     {
                         if (player != null) onSelectAction.Invoke(admin, player);
                     },
-                    enabled == false);
+                    enabled == false ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);

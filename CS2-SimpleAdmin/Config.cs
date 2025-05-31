@@ -119,8 +119,6 @@ public class CustomServerCommandData
 
 public class MenuConfig
 {
-    [JsonPropertyName("MenuType")] public string MenuType { get; set; } = "selectable";
-
     [JsonPropertyName("Durations")]
     public DurationItem[] Durations { get; set; } =
     [

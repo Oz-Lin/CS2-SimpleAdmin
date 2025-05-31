@@ -3,6 +3,7 @@ using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Menu;
+using CS2MenuManager.API.Menu;
 
 namespace CS2_SimpleAdmin;
 
@@ -33,17 +34,15 @@ public partial class CS2_SimpleAdmin
             {
                 using (new WithTemporaryCulture(player.GetLanguage()))
                 {
-                    IMenu? voteMenu = Helper.CreateMenu(_localizer["sa_admin_vote_menu_title", question]);
+                    PlayerMenu voteMenu = new(_localizer["sa_admin_vote_menu_title", question], this);
                     if (voteMenu == null)
                         return;
                     //ChatMenu voteMenu = new(_localizer!["sa_admin_vote_menu_title", question]);
 
                     for (var i = 2; i <= answersCount - 1; i++)
                     {
-                        voteMenu.AddMenuOption(command.GetArg(i), Helper.HandleVotes);
+                        voteMenu.AddItem(command.GetArg(i), Helper.HandleVotes);
                     }
-
-                    voteMenu.PostSelectAction = PostSelectAction.Close;
 
                     Helper.PrintToCenterAll(_localizer["sa_admin_vote_message", caller == null ? _localizer["sa_console"] : caller.PlayerName, question]);
 
@@ -52,9 +51,7 @@ public partial class CS2_SimpleAdmin
                         caller == null ? _localizer["sa_console"] : caller.PlayerName,
                         question);
 
-                    voteMenu.Open(player);
-
-                    //MenuManager.OpenChatMenu(player, voteMenu);
+                    voteMenu.Display(player, 0);
                 }
             }
 

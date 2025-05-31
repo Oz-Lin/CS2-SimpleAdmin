@@ -21,7 +21,8 @@ using System.Text.RegularExpressions;
 using CounterStrikeSharp.API.Core.Plugin.Host;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CS2_SimpleAdmin.Managers;
-using MenuManager;
+using CS2MenuManager.API.Class;
+using CS2MenuManager.API.Enum;
 using ZLinq;
 
 namespace CS2_SimpleAdmin;
@@ -294,12 +295,12 @@ internal static class Helper
         });
     }
 
-    internal static void HandleVotes(CCSPlayerController player, ChatMenuOption option)
+    internal static void HandleVotes(CCSPlayerController player, ItemOption option)
     {
         if (!CS2_SimpleAdmin.VoteInProgress)
             return;
 
-        option.Disabled = true;
+        option.DisableOption = DisableOption.DisableHideNumber;
         CS2_SimpleAdmin.VoteAnswers[option.Text]++;
     }
 
@@ -757,34 +758,7 @@ internal static class Helper
             CS2_SimpleAdmin._localizer["sa_discord_log_command", $"[{callerName}]({communityUrl})",
                 commandString]));
     }
-
-    public static IMenu? CreateMenu(string title, Action<CCSPlayerController>? backAction = null)
-    {
-        var menuType = CS2_SimpleAdmin.Instance.Config.MenuConfigs.MenuType.ToLower();
-        
-        var menu = menuType switch
-        {
-            _ when menuType.Equals("selectable", StringComparison.CurrentCultureIgnoreCase) =>
-                CS2_SimpleAdmin.MenuApi?.GetMenu(title),
-
-            _ when menuType.Equals("dynamic", StringComparison.CurrentCultureIgnoreCase) =>
-                CS2_SimpleAdmin.MenuApi?.GetMenuForcetype(title, MenuType.ButtonMenu),
-
-            _ when menuType.Equals("center", StringComparison.CurrentCultureIgnoreCase) =>
-                CS2_SimpleAdmin.MenuApi?.GetMenuForcetype(title, MenuType.CenterMenu),
-
-            _ when menuType.Equals("chat", StringComparison.CurrentCultureIgnoreCase) =>
-                CS2_SimpleAdmin.MenuApi?.GetMenuForcetype(title, MenuType.ChatMenu),
-
-            _ when menuType.Equals("console", StringComparison.CurrentCultureIgnoreCase) =>
-                CS2_SimpleAdmin.MenuApi?.GetMenuForcetype(title, MenuType.ConsoleMenu),
-
-            _ => CS2_SimpleAdmin.MenuApi?.GetMenu(title)
-        };
-
-        return menu;
-    }
-
+    
     internal static IPluginManager? GetPluginManager()
     {
         // Access the singleton instance of Application

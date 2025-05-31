@@ -1,8 +1,10 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 using CS2_SimpleAdminApi;
+using CS2MenuManager.API.Enum;
 
 namespace CS2_SimpleAdmin.Menus;
 
@@ -78,7 +80,7 @@ public static class ManagePlayersMenu
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddMenuOption(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled);
+            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
@@ -101,7 +103,7 @@ public static class ManagePlayersMenu
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddMenuOption(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled);
+            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
@@ -135,7 +137,7 @@ public static class ManagePlayersMenu
         //
         // foreach (var option in CS2_SimpleAdmin.Instance.Config.MenuConfigs.KickReasons)
         // {
-        // 	menu?.AddMenuOption(option, (_, _) =>
+        // 	menu?.AddItem(option, (_, _) =>
         // 	{
         // 		if (player is { IsValid: true })
         // 			Kick(admin, player, option);
@@ -160,14 +162,14 @@ public static class ManagePlayersMenu
                 if (player is { IsValid: true })
                     Ban(admin, player, duration, reason);
                 
-                CS2_SimpleAdmin.MenuApi?.CloseMenu(admin);
+                MenuManager.CloseActiveMenu(admin);
             });
 
         // var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_ban"] ?? "Ban"}: {player?.PlayerName}");
         //
         // foreach (var option in CS2_SimpleAdmin.Instance.Config.MenuConfigs.BanReasons)
         // {
-        // 	menu?.AddMenuOption(option, (_, _) =>
+        // 	menu?.AddItem(option, (_, _) =>
         // 	{
         // 		if (player is { IsValid: true })
         // 			Ban(admin, player, duration, option);
@@ -197,7 +199,7 @@ public static class ManagePlayersMenu
         //
         // foreach (var option in CS2_SimpleAdmin.Instance.Config.MenuConfigs.WarnReasons)
         // {
-        // 	menu?.AddMenuOption(option, (_, _) =>
+        // 	menu?.AddItem(option, (_, _) =>
         // 	{
         // 		if (player is { IsValid: true })
         // 			Warn(admin, player, duration, option);
@@ -227,7 +229,7 @@ public static class ManagePlayersMenu
         //
         // foreach (var option in CS2_SimpleAdmin.Instance.Config.MenuConfigs.MuteReasons)
         // {
-        // 	menu?.AddMenuOption(option, (_, _) =>
+        // 	menu?.AddItem(option, (_, _) =>
         // 	{
         // 		if (player is { IsValid: true })
         // 			Gag(admin, player, duration, option);
@@ -258,7 +260,7 @@ public static class ManagePlayersMenu
         //
         // foreach (var option in CS2_SimpleAdmin.Instance.Config.MenuConfigs.MuteReasons)
         // {
-        // 	menu?.AddMenuOption(option, (_, _) =>
+        // 	menu?.AddItem(option, (_, _) =>
         // 	{
         // 		if (player is { IsValid: true })
         // 			Mute(admin, player, duration, option);
@@ -289,7 +291,7 @@ public static class ManagePlayersMenu
         //
         // foreach (var option in CS2_SimpleAdmin.Instance.Config.MenuConfigs.MuteReasons)
         // {
-        // 	menu?.AddMenuOption(option, (_, _) =>
+        // 	menu?.AddItem(option, (_, _) =>
         // 	{
         // 		if (player is { IsValid: true })
         // 			Silence(admin, player, duration, option);
@@ -321,7 +323,7 @@ public static class ManagePlayersMenu
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddMenuOption(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled);
+            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);

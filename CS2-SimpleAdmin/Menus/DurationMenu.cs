@@ -11,7 +11,7 @@ public static class DurationMenu
 
         foreach (var durationItem in CS2_SimpleAdmin.Instance.Config.MenuConfigs.Durations)
         {
-            menu?.AddMenuOption(durationItem.Name, (_, _) => { onSelectAction(admin, player, durationItem.Duration); });
+            menu?.AddItem(durationItem.Name, (_, _) => { onSelectAction(admin, player, durationItem.Duration); });
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
@@ -23,7 +23,7 @@ public static class DurationMenu
 
         foreach (var durationItem in CS2_SimpleAdmin.Instance.Config.MenuConfigs.Durations)
         {
-            menu?.AddMenuOption(durationItem.Name, (_, _) => { onSelectAction(admin, player, durationItem.Duration); });
+            menu?.AddItem(durationItem.Name, (_, _) => { onSelectAction(admin, player, durationItem.Duration); });
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
