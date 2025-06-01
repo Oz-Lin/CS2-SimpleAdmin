@@ -537,13 +537,13 @@ public partial class CS2_SimpleAdmin
     {
         if (_localizer == null || caller == null) return;
 
-        var disconnectedMenu = new PlayerMenu(_localizer["sa_menu_disconnected_title"], this);
+        var disconnectedMenu = Helper.CreateMenu(_localizer["sa_menu_disconnected_title"]);
 
         DisconnectedPlayers.ForEach(player =>
         {
             disconnectedMenu?.AddItem(player.Name, (_, _) =>
             {
-                var disconnectedMenuAction = new PlayerMenu(_localizer["sa_menu_disconnected_action_title"], this);
+                var disconnectedMenuAction = Helper.CreateMenu(_localizer["sa_menu_disconnected_action_title"]);
                 disconnectedMenuAction?.AddItem(_localizer["sa_ban"], (_, _) =>
                 {
                     DurationMenu.OpenMenu(caller, _localizer["sa_ban"], player, (_, _, duration) =>
@@ -565,9 +565,7 @@ public partial class CS2_SimpleAdmin
                             {
                                 Helper.ShowAdminActivity(activityMessageKey, caller.PlayerName, false ,adminActivityArgs);
                             }
-                            
-                            MenuManager.CloseActiveMenu(caller);
-                        }));
+                        }, disconnectedMenu), null);
                 });
                 disconnectedMenuAction?.AddItem(_localizer["sa_mute"], (_, _) =>
                 {
@@ -590,9 +588,7 @@ public partial class CS2_SimpleAdmin
                             {
                                 Helper.ShowAdminActivity(activityMessageKey, caller.PlayerName, false, adminActivityArgs);
                             }
-                            
-                            MenuManager.CloseActiveMenu(caller);
-                        }));
+                        }, disconnectedMenu), null);
                 });
                 disconnectedMenuAction?.AddItem(_localizer["sa_gag"], (_, _) =>
                 {
@@ -615,9 +611,7 @@ public partial class CS2_SimpleAdmin
                             {
                                 Helper.ShowAdminActivity(activityMessageKey, caller.PlayerName, false, adminActivityArgs);
                             }
-                            
-                            MenuManager.CloseActiveMenu(caller);
-                        }));
+                        }, disconnectedMenu), null);
                 });
                 disconnectedMenuAction?.AddItem(_localizer["sa_silence"], (_, _) =>
                 {
@@ -640,9 +634,7 @@ public partial class CS2_SimpleAdmin
                             {
                                 Helper.ShowAdminActivity(activityMessageKey, caller.PlayerName, false, adminActivityArgs);
                             }
-                            
-                            MenuManager.CloseActiveMenu(caller);
-                        }));
+                        }, disconnectedMenu), null);
                 });
 
                 disconnectedMenuAction?.Display(caller, 0);
@@ -674,7 +666,7 @@ public partial class CS2_SimpleAdmin
 
             var userId = player.UserId.Value;
 
-            PlayerMenu warnsMenu = new(_localizer["sa_admin_warns_menu_title", player.PlayerName], this);
+            var warnsMenu = Helper.CreateMenu(_localizer["sa_admin_warns_menu_title", player.PlayerName]);
 
             Task.Run(async () =>
             {
@@ -1011,7 +1003,7 @@ public partial class CS2_SimpleAdmin
             return;
         }
 
-        var pluginsMenu = new PlayerMenu(Localizer["sa_menu_pluginsmanager_title"], this);
+        var pluginsMenu = Helper.CreateMenu(Localizer["sa_menu_pluginsmanager_title"]);
         
         foreach (var plugin in plugins)
         {

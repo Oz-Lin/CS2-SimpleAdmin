@@ -6,7 +6,6 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Memory;
-using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.ValveConstants.Protobuf;
 using CS2_SimpleAdminApi;
 using Microsoft.Extensions.Localization;
@@ -24,6 +23,8 @@ using CS2_SimpleAdmin.Managers;
 using CS2MenuManager.API.Class;
 using CS2MenuManager.API.Enum;
 using ZLinq;
+using BaseMenu = CS2MenuManager.API.Class.BaseMenu;
+using static CS2_SimpleAdmin.CS2_SimpleAdmin;
 
 namespace CS2_SimpleAdmin;
 
@@ -757,6 +758,11 @@ internal static class Helper
         _ = CS2_SimpleAdmin.DiscordWebhookClientLog.SendMessageAsync(GenerateMessageDiscord(
             CS2_SimpleAdmin._localizer["sa_discord_log_command", $"[{callerName}]({communityUrl})",
                 commandString]));
+    }
+    
+    public static BaseMenu CreateMenu(string title)
+    {
+        return MenuManager.MenuByType(CS2_SimpleAdmin.Instance.Config.MenuConfigs.MenuType, title, Instance);
     }
     
     internal static IPluginManager? GetPluginManager()

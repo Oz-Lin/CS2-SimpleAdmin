@@ -42,8 +42,7 @@ public partial class CS2_SimpleAdmin
             
             if (time < 0 && caller != null && caller.IsValid && Config.OtherSettings.ShowBanMenuIfNoTime)
             {
-                DurationMenu.OpenMenu(caller, $"{_localizer?["sa_ban"] ?? "Ban"}: {player.PlayerName}", player,
-                    ManagePlayersMenu.BanMenu);
+                DurationMenu.OpenMenu(caller, $"{_localizer?["sa_ban"] ?? "Ban"}: {player.PlayerName}", player, (a,p,t) => ManagePlayersMenu.BanMenu(a,p,t, null), null);
                 return;
             }
 

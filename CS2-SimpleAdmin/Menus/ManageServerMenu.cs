@@ -1,13 +1,14 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Entities;
+using CS2MenuManager.API.Class;
 using CS2MenuManager.API.Enum;
 
 namespace CS2_SimpleAdmin.Menus;
 
 public static class ManageServerMenu
 {
-    public static void OpenMenu(CCSPlayerController admin)
+    public static void OpenMenu(CCSPlayerController admin, BaseMenu prevMenu)
     {
         if (admin.IsValid == false)
             return;
@@ -41,7 +42,7 @@ public static class ManageServerMenu
 
         if (hasMap)
         {
-            options.Add(new ChatMenuOptionData(localizer?["sa_changemap"] ?? "Change Map", () => ChangeMapMenu(admin)));
+            options.Add(new ChatMenuOptionData(localizer?["sa_changemap"] ?? "Change Map", () => ChangeMapMenu(admin, menu)));
         }
 
         options.Add(new ChatMenuOptionData(localizer?["sa_restart_game"] ?? "Restart Game", () => CS2_SimpleAdmin.RestartGame(admin)));
@@ -49,13 +50,14 @@ public static class ManageServerMenu
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
+            menu.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
-        if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        menu.PrevMenu = prevMenu;
+        menu.Display(admin, 0);
     }
 
-    private static void ChangeMapMenu(CCSPlayerController admin)
+    private static void ChangeMapMenu(CCSPlayerController admin, BaseMenu prevMenu)
     {
         var menu = AdminMenu.CreateMenu(CS2_SimpleAdmin._localizer?["sa_changemap"] ?? "Change Map");
         List<ChatMenuOptionData> options = [];
@@ -69,10 +71,11 @@ public static class ManageServerMenu
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);;
+            menu.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);;
         }
 
-        if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        menu.PrevMenu = prevMenu;
+        menu.Display(admin, 0);
     }
 
     private static void ExecuteChangeMap(CCSPlayerController admin, string mapName, bool workshop)

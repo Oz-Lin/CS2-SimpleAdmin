@@ -1,16 +1,16 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Entities;
-using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 using CS2_SimpleAdminApi;
+using CS2MenuManager.API.Class;
 using CS2MenuManager.API.Enum;
 
 namespace CS2_SimpleAdmin.Menus;
 
 public static class ManagePlayersMenu
 {
-    public static void OpenMenu(CCSPlayerController admin)
+    public static void OpenMenu(CCSPlayerController admin, BaseMenu prevMenu)
     {
         if (admin.IsValid == false)
             return;
@@ -39,82 +39,85 @@ public static class ManagePlayersMenu
 
         if (hasSlay)
         {
-            options.Add(new ChatMenuOptionData(localizer?["sa_slap"] ?? "Slap", () => PlayersMenu.OpenMenu(admin, localizer?["sa_slap"] ?? "Slap", SlapMenu)));
-            options.Add(new ChatMenuOptionData(localizer?["sa_slay"] ?? "Slay", () => PlayersMenu.OpenMenu(admin, localizer?["sa_slay"] ?? "Slay", Slay)));
+            options.Add(new ChatMenuOptionData(localizer?["sa_slap"] ?? "Slap", () => PlayersMenu.OpenMenu(admin, localizer?["sa_slap"] ?? "Slap", (p, o) => SlapMenu(admin, p, menu), null, menu)));
+            options.Add(new ChatMenuOptionData(localizer?["sa_slay"] ?? "Slay", () => PlayersMenu.OpenMenu(admin, localizer?["sa_slay"] ?? "Slay", Slay, null, menu)));
         }
 
         if (hasKick)
         {
-            options.Add(new ChatMenuOptionData(localizer?["sa_kick"] ?? "Kick", () => PlayersMenu.OpenMenu(admin, localizer?["sa_kick"] ?? "Kick", KickMenu)));
+            options.Add(new ChatMenuOptionData(localizer?["sa_kick"] ?? "Kick", () => PlayersMenu.OpenMenu(admin, localizer?["sa_kick"] ?? "Kick", (p, o) => KickMenu(admin, p, menu), null, menu)));
         }
 
         if (AdminManager.CommandIsOverriden("css_warn")
                 ? AdminManager.PlayerHasPermissions(new SteamID(admin.SteamID), AdminManager.GetPermissionOverrides("css_warn"))
                 : AdminManager.PlayerHasPermissions(new SteamID(admin.SteamID), "@css/kick"))
-            options.Add(new ChatMenuOptionData(localizer?["sa_warn"] ?? "Warn", () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_warn"] ?? "Warn", (admin, player) => DurationMenu.OpenMenu(admin, $"{localizer?["sa_warn"] ?? "Warn"}: {player.PlayerName}", player, WarnMenu))));
+            options.Add(new ChatMenuOptionData(localizer?["sa_warn"] ?? "Warn", () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_warn"] ?? "Warn", (admin, player) => DurationMenu.OpenMenu(admin, $"{localizer?["sa_warn"] ?? "Warn"}: {player.PlayerName}", player, (a, p, t) => WarnMenu(a, p, t, menu), menu), null, menu)));
 
         if (hasBan)
-            options.Add(new ChatMenuOptionData(localizer?["sa_ban"] ?? "Ban", () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_ban"] ?? "Ban", (admin, player) => DurationMenu.OpenMenu(admin, $"{localizer?["sa_ban"] ?? "Ban"}: {player.PlayerName}", player, BanMenu))));
+            options.Add(new ChatMenuOptionData(localizer?["sa_ban"] ?? "Ban", () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_ban"] ?? "Ban", (admin, player) => DurationMenu.OpenMenu(admin, $"{localizer?["sa_ban"] ?? "Ban"}: {player.PlayerName}", player, (a, p, t) => BanMenu(a, p, t, menu), menu), null, menu)));
 
         if (hasChat)
         {
             if (AdminManager.CommandIsOverriden("css_gag")
                     ? AdminManager.PlayerHasPermissions(new SteamID(admin.SteamID), AdminManager.GetPermissionOverrides("css_gag"))
                     : AdminManager.PlayerHasPermissions(new SteamID(admin.SteamID), "@css/chat"))
-                options.Add(new ChatMenuOptionData(localizer?["sa_gag"] ?? "Gag", () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_gag"] ?? "Gag", (admin, player) => DurationMenu.OpenMenu(admin, $"{localizer?["sa_gag"] ?? "Gag"}: {player.PlayerName}", player, GagMenu))));
+                options.Add(new ChatMenuOptionData(localizer?["sa_gag"] ?? "Gag", () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_gag"] ?? "Gag", (admin, player) => DurationMenu.OpenMenu(admin, $"{localizer?["sa_gag"] ?? "Gag"}: {player.PlayerName}", player, (a, p, t) => GagMenu(a, p, t, menu), menu), null, menu)));
             if (AdminManager.CommandIsOverriden("css_mute")
                     ? AdminManager.PlayerHasPermissions(new SteamID(admin.SteamID), AdminManager.GetPermissionOverrides("css_mute"))
                     : AdminManager.PlayerHasPermissions(new SteamID(admin.SteamID), "@css/chat"))
-                options.Add(new ChatMenuOptionData(localizer?["sa_mute"] ?? "Mute", () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_mute"] ?? "Mute", (admin, player) => DurationMenu.OpenMenu(admin, $"{localizer?["sa_mute"] ?? "Mute"}: {player.PlayerName}", player, MuteMenu))));
+                options.Add(new ChatMenuOptionData(localizer?["sa_mute"] ?? "Mute", () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_mute"] ?? "Mute", (admin, player) => DurationMenu.OpenMenu(admin, $"{localizer?["sa_mute"] ?? "Mute"}: {player.PlayerName}", player, (a, p, t) => MuteMenu(a, p, t, menu), menu), null, menu)));
             if (AdminManager.CommandIsOverriden("css_silence")
                     ? AdminManager.PlayerHasPermissions(new SteamID(admin.SteamID), AdminManager.GetPermissionOverrides("css_silence"))
                     : AdminManager.PlayerHasPermissions(new SteamID(admin.SteamID), "@css/chat"))
-                options.Add(new ChatMenuOptionData(localizer?["sa_silence"] ?? "Silence", () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_silence"] ?? "Silence", (admin, player) => DurationMenu.OpenMenu(admin, $"{localizer?["sa_silence"] ?? "Silence"}: {player.PlayerName}", player, SilenceMenu))));
+                options.Add(new ChatMenuOptionData(localizer?["sa_silence"] ?? "Silence", () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_silence"] ?? "Silence", (admin, player) => DurationMenu.OpenMenu(admin, $"{localizer?["sa_silence"] ?? "Silence"}: {player.PlayerName}", player, (a, p, t) => SilenceMenu(a, p, t, menu), menu), null, menu)));
         }
 
         if (AdminManager.CommandIsOverriden("css_team")
                 ? AdminManager.PlayerHasPermissions(new SteamID(admin.SteamID), AdminManager.GetPermissionOverrides("css_team"))
                 : AdminManager.PlayerHasPermissions(new SteamID(admin.SteamID), "@css/kick"))
-            options.Add(new ChatMenuOptionData(localizer?["sa_team_force"] ?? "Force Team", () => PlayersMenu.OpenMenu(admin, localizer?["sa_team_force"] ?? "Force Team", ForceTeamMenu)));
+            options.Add(new ChatMenuOptionData(localizer?["sa_team_force"] ?? "Force Team", () => PlayersMenu.OpenMenu(admin, localizer?["sa_team_force"] ?? "Force Team", (p, o) => ForceTeamMenu(admin, p, menu), null, menu)));
 
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
+            menu.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
-        if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        menu.PrevMenu = prevMenu;
+        menu.Display(admin, 0);
     }
 
-    private static void SlapMenu(CCSPlayerController admin, CCSPlayerController player)
+    private static void SlapMenu(CCSPlayerController admin, CCSPlayerController player, BaseMenu prevMenu)
     {
         var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_slap"] ?? "Slap"}: {player.PlayerName}");
         List<ChatMenuOptionData> options =
         [
 			// options added in order
-			new ChatMenuOptionData("0 hp", () => ApplySlapAndKeepMenu(admin, player, 0)),
-            new ChatMenuOptionData("1 hp", () => ApplySlapAndKeepMenu(admin, player, 1)),
-            new ChatMenuOptionData("5 hp", () => ApplySlapAndKeepMenu(admin, player, 5)),
-            new ChatMenuOptionData("10 hp", () => ApplySlapAndKeepMenu(admin, player, 10)),
-            new ChatMenuOptionData("50 hp", () => ApplySlapAndKeepMenu(admin, player, 50)),
-            new ChatMenuOptionData("100 hp", () => ApplySlapAndKeepMenu(admin, player, 100)),
+			new ChatMenuOptionData("0 hp", () => ApplySlapAndKeepMenu(admin, player, 0, menu)),
+            new ChatMenuOptionData("1 hp", () => ApplySlapAndKeepMenu(admin, player, 1, menu)),
+            new ChatMenuOptionData("5 hp", () => ApplySlapAndKeepMenu(admin, player, 5, menu)),
+            new ChatMenuOptionData("10 hp", () => ApplySlapAndKeepMenu(admin, player, 10, menu)),
+            new ChatMenuOptionData("50 hp", () => ApplySlapAndKeepMenu(admin, player, 50, menu)),
+            new ChatMenuOptionData("100 hp", () => ApplySlapAndKeepMenu(admin, player, 100, menu)),
         ];
 
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
+            menu.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
-        if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        menu.PrevMenu = prevMenu;
+        menu.Display(admin, 0);
+
     }
 
-    private static void ApplySlapAndKeepMenu(CCSPlayerController admin, CCSPlayerController player, int damage)
+    private static void ApplySlapAndKeepMenu(CCSPlayerController admin, CCSPlayerController player, int damage, BaseMenu prevMenu)
     {
         if (player is not { IsValid: true }) return;
 
         CS2_SimpleAdmin.Slap(admin, player, damage);
-        SlapMenu(admin, player);
+        SlapMenu(admin, player, prevMenu);
     }
 
     private static void Slay(CCSPlayerController admin, CCSPlayerController player)
@@ -124,14 +127,14 @@ public static class ManagePlayersMenu
         CS2_SimpleAdmin.Slay(admin, player);
     }
 
-    private static void KickMenu(CCSPlayerController admin, CCSPlayerController player)
+    private static void KickMenu(CCSPlayerController admin, CCSPlayerController player, BaseMenu prevMenu)
     {
         ReasonMenu.OpenMenu(admin, PenaltyType.Kick,
             $"{CS2_SimpleAdmin._localizer?["sa_kick"] ?? "Kick"}: {player.PlayerName}", player, (_, _, reason) =>
         {
             if (player is { IsValid: true })
                 Kick(admin, player, reason);
-        });
+        }, prevMenu);
 
         // var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_kick"] ?? "Kick"}: {player?.PlayerName}");
         //
@@ -144,7 +147,7 @@ public static class ManagePlayersMenu
         // 	});
         // }
         //
-        // if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        // menu.PrevMenu = prevMenu;
     }
 
     private static void Kick(CCSPlayerController admin, CCSPlayerController player, string? reason)
@@ -154,7 +157,7 @@ public static class ManagePlayersMenu
         CS2_SimpleAdmin.Instance.Kick(admin, player, reason, admin.PlayerName);
     }
 
-    internal static void BanMenu(CCSPlayerController admin, CCSPlayerController player, int duration)
+    internal static void BanMenu(CCSPlayerController admin, CCSPlayerController player, int duration, BaseMenu? prevMenu)
     {
         ReasonMenu.OpenMenu(admin, PenaltyType.Ban,
             $"{CS2_SimpleAdmin._localizer?["sa_ban"] ?? "Ban"}: {player.PlayerName}", player, (_, _, reason) =>
@@ -163,7 +166,7 @@ public static class ManagePlayersMenu
                     Ban(admin, player, duration, reason);
                 
                 MenuManager.CloseActiveMenu(admin);
-            });
+            }, prevMenu);
 
         // var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_ban"] ?? "Ban"}: {player?.PlayerName}");
         //
@@ -176,7 +179,7 @@ public static class ManagePlayersMenu
         // 	});
         // }
         //
-        // if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        // menu.PrevMenu = prevMenu;
     }
 
     private static void Ban(CCSPlayerController admin, CCSPlayerController player, int duration, string reason)
@@ -186,14 +189,14 @@ public static class ManagePlayersMenu
         CS2_SimpleAdmin.Instance.Ban(admin, player, duration, reason, admin.PlayerName);
     }
 
-    private static void WarnMenu(CCSPlayerController admin, CCSPlayerController player, int duration)
+    private static void WarnMenu(CCSPlayerController admin, CCSPlayerController player, int duration, BaseMenu prevMenu)
     {
         ReasonMenu.OpenMenu(admin, PenaltyType.Warn,
             $"{CS2_SimpleAdmin._localizer?["sa_warn"] ?? "Warn"}: {player.PlayerName}", player, (_, _, reason) =>
             {
                 if (player is { IsValid: true })
                     Warn(admin, player, duration, reason);
-            });
+            }, prevMenu);
 
         // var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_warn"] ?? "Warn"}: {player?.PlayerName}");
         //
@@ -206,7 +209,7 @@ public static class ManagePlayersMenu
         // 	});
         // }
         //
-        // if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        // menu.PrevMenu = prevMenu;
     }
 
     private static void Warn(CCSPlayerController admin, CCSPlayerController player, int duration, string reason)
@@ -216,14 +219,14 @@ public static class ManagePlayersMenu
         CS2_SimpleAdmin.Instance.Warn(admin, player, duration, reason, admin.PlayerName);
     }
 
-    internal static void GagMenu(CCSPlayerController admin, CCSPlayerController player, int duration)
+    internal static void GagMenu(CCSPlayerController admin, CCSPlayerController player, int duration, BaseMenu? prevMenu)
     {
         ReasonMenu.OpenMenu(admin, PenaltyType.Gag,
             $"{CS2_SimpleAdmin._localizer?["sa_gag"] ?? "Gag"}: {player.PlayerName}", player, (_, _, reason) =>
             {
                 if (player is { IsValid: true })
                     Gag(admin, player, duration, reason);
-            });
+            }, prevMenu);
 
         // var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_gag"] ?? "Gag"}: {player?.PlayerName}");
         //
@@ -236,7 +239,7 @@ public static class ManagePlayersMenu
         // 	});
         // }
         //
-        // if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        // menu.PrevMenu = prevMenu;
     }
 
     private static void Gag(CCSPlayerController admin, CCSPlayerController player, int duration, string reason)
@@ -246,14 +249,14 @@ public static class ManagePlayersMenu
         CS2_SimpleAdmin.Instance.Gag(admin, player, duration, reason);
     }
 
-    internal static void MuteMenu(CCSPlayerController admin, CCSPlayerController player, int duration)
+    internal static void MuteMenu(CCSPlayerController admin, CCSPlayerController player, int duration, BaseMenu? prevMenu)
     {
         ReasonMenu.OpenMenu(admin, PenaltyType.Mute,
             $"{CS2_SimpleAdmin._localizer?["sa_mute"] ?? "mute"}: {player.PlayerName}", player, (_, _, reason) =>
             {
                 if (player is { IsValid: true })
                     Mute(admin, player, duration, reason);
-            });
+            }, prevMenu);
 
         // // TODO: Localize and make options in config?
         // var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_mute"] ?? "Mute"}: {player?.PlayerName}");
@@ -267,7 +270,7 @@ public static class ManagePlayersMenu
         // 	});
         // }
         //
-        // if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        // menu.PrevMenu = prevMenu;
     }
 
     private static void Mute(CCSPlayerController admin, CCSPlayerController player, int duration, string reason)
@@ -277,14 +280,14 @@ public static class ManagePlayersMenu
         CS2_SimpleAdmin.Instance.Mute(admin, player, duration, reason);
     }
 
-    internal static void SilenceMenu(CCSPlayerController admin, CCSPlayerController player, int duration)
+    internal static void SilenceMenu(CCSPlayerController admin, CCSPlayerController player, int duration, BaseMenu? prevMenu)
     {
         ReasonMenu.OpenMenu(admin, PenaltyType.Silence,
             $"{CS2_SimpleAdmin._localizer?["sa_silence"] ?? "Silence"}: {player.PlayerName}", player, (_, _, reason) =>
             {
                 if (player is { IsValid: true })
                     Silence(admin, player, duration, reason);
-            });
+            }, prevMenu);
 
         // // TODO: Localize and make options in config?
         // var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_silence"] ?? "Silence"}: {player?.PlayerName}");
@@ -298,7 +301,7 @@ public static class ManagePlayersMenu
         // 	});
         // }
         //
-        // if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        // menu.PrevMenu = prevMenu;
     }
 
     private static void Silence(CCSPlayerController admin, CCSPlayerController player, int duration, string reason)
@@ -308,7 +311,7 @@ public static class ManagePlayersMenu
         CS2_SimpleAdmin.Instance.Silence(admin, player, duration, reason);
     }
 
-    private static void ForceTeamMenu(CCSPlayerController admin, CCSPlayerController player)
+    private static void ForceTeamMenu(CCSPlayerController admin, CCSPlayerController player, BaseMenu prevMenu)
     {
         // TODO: Localize
         var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_team_force"] ?? "Force Team"} {player.PlayerName}");
@@ -323,10 +326,11 @@ public static class ManagePlayersMenu
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
+            menu.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
-        if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        menu.PrevMenu = prevMenu;
+        menu.Display(admin, 0);
     }
 
     private static void ForceTeam(CCSPlayerController admin, CCSPlayerController player, string teamName, CsTeam teamNum)
