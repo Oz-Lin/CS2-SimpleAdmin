@@ -167,8 +167,7 @@ public static class RegisterCommands
         {
             if (command.Value.Aliases == null) continue;
             
-            CS2_SimpleAdmin._logger?.LogInformation(
-                $"Registering command: `{command.Key}` with aliases: `{string.Join(", ", command.Value.Aliases)}`");
+            //CS2_SimpleAdmin._logger?.LogInformation($"Registering command: `{command.Key}` with aliases: `{string.Join(", ", command.Value.Aliases)}`");
             
             var mapping = CommandMappings.FirstOrDefault(m => m.CommandKey == command.Key);
             if (mapping == null || command.Value.Aliases.Length == 0) continue;
