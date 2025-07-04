@@ -300,12 +300,12 @@ internal static class Helper
         });
     }
     
-    internal static void HandleVotes(CCSPlayerController player, ChatMenuOption option)
+    internal static void HandleVotes(CCSPlayerController player, ItemOption option)
     {
         if (!CS2_SimpleAdmin.VoteInProgress)
             return;
 
-        option.Disabled = true;
+        option.DisableOption = DisableOption.DisableHideNumber;
         CS2_SimpleAdmin.VoteAnswers[option.Text]++;
     }
     
