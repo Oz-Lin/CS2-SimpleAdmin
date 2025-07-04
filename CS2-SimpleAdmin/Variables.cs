@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CS2_SimpleAdmin.Models;
 using CS2_SimpleAdminApi;

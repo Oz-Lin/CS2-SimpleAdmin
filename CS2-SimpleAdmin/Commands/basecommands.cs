@@ -190,10 +190,10 @@ public partial class CS2_SimpleAdmin
             return;
         
         var lines = File.ReadAllLines(ModuleDirectory + "/admin_help.txt");
+        command.ReplyToCommand($" {ChatColors.Green}[ADMIN] {ChatColors.White}Check your console for all admin commands.");
 
         foreach (var line in lines)
         {
-            command.ReplyToCommand($" {ChatColors.Green}[ADMIN] {ChatColors.White}Check your console for all admin commands.");
             caller.PrintToConsole(string.IsNullOrWhiteSpace(line) ? " " : line.ReplaceColorTags());
         }
     }
@@ -569,9 +569,7 @@ public partial class CS2_SimpleAdmin
                             {
                                 Helper.ShowAdminActivity(activityMessageKey, caller.PlayerName, false ,adminActivityArgs);
                             }
-                            
-                            MenuManager.CloseActiveMenu(caller);
-                        }));
+                        }, disconnectedMenu), null);
                 });
                 disconnectedMenuAction?.AddItem(_localizer["sa_mute"], (_, _) =>
                 {
@@ -594,9 +592,7 @@ public partial class CS2_SimpleAdmin
                             {
                                 Helper.ShowAdminActivity(activityMessageKey, caller.PlayerName, false, adminActivityArgs);
                             }
-                            
-                            MenuManager.CloseActiveMenu(caller);
-                        }));
+                        }, disconnectedMenu), null);
                 });
                 disconnectedMenuAction?.AddItem(_localizer["sa_gag"], (_, _) =>
                 {
@@ -619,9 +615,7 @@ public partial class CS2_SimpleAdmin
                             {
                                 Helper.ShowAdminActivity(activityMessageKey, caller.PlayerName, false, adminActivityArgs);
                             }
-                            
-                            MenuManager.CloseActiveMenu(caller);
-                        }));
+                        }, disconnectedMenu), null);
                 });
                 disconnectedMenuAction?.AddItem(_localizer["sa_silence"], (_, _) =>
                 {
@@ -644,9 +638,7 @@ public partial class CS2_SimpleAdmin
                             {
                                 Helper.ShowAdminActivity(activityMessageKey, caller.PlayerName, false, adminActivityArgs);
                             }
-                            
-                            MenuManager.CloseActiveMenu(caller);
-                        }));
+                        }, disconnectedMenu), null);
                 });
 
                 disconnectedMenuAction?.Display(caller, 0);
@@ -678,7 +670,7 @@ public partial class CS2_SimpleAdmin
 
             var userId = player.UserId.Value;
 
-            ScreenMenu warnsMenu = new ScreenMenu(_localizer["sa_admin_warns_menu_title", player.PlayerName], CS2_SimpleAdmin.Instance);
+            var warnsMenu = Helper.CreateMenu(_localizer["sa_admin_warns_menu_title", player.PlayerName]);
 
             Task.Run(async () =>
             {
@@ -998,7 +990,7 @@ public partial class CS2_SimpleAdmin
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
     public void OnPluginManagerCommand(CCSPlayerController? caller, CommandInfo commandInfo)
     {
-        if (caller == null || Instance == null)
+        if (caller == null)
             return;
         
         var pluginManager = Helper.GetPluginManager();

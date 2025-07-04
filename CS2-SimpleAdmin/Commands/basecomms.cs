@@ -40,8 +40,7 @@ public partial class CS2_SimpleAdmin
             if (!caller!.CanTarget(player)) return;
             if (time < 0 && caller != null && caller.IsValid && Config.OtherSettings.ShowBanMenuIfNoTime)
             {
-                DurationMenu.OpenMenu(caller, $"{_localizer?["sa_gag"] ?? "Gag"}: {player.PlayerName}", player,
-                    ManagePlayersMenu.GagMenu);
+                DurationMenu.OpenMenu(caller, $"{_localizer?["sa_gag"] ?? "Gag"}: {player.PlayerName}", player, (a,p,t) => ManagePlayersMenu.GagMenu(a, p, t, null), null);
                 return;
             }
             
@@ -302,8 +301,7 @@ public partial class CS2_SimpleAdmin
             if (!caller!.CanTarget(player)) return;
             if (time < 0 && caller != null && caller.IsValid && Config.OtherSettings.ShowBanMenuIfNoTime)
             {
-                DurationMenu.OpenMenu(caller, $"{_localizer?["sa_mute"] ?? "Mute"}: {player.PlayerName}", player,
-                    ManagePlayersMenu.MuteMenu);
+                DurationMenu.OpenMenu(caller, $"{_localizer?["sa_mute"] ?? "Mute"}: {player.PlayerName}", player, (a,p,t) => ManagePlayersMenu.MuteMenu(a, p, t, null), null);
                 return;
             }
 
@@ -569,8 +567,7 @@ public partial class CS2_SimpleAdmin
             if (!caller!.CanTarget(player)) return;
             if (time < 0 && caller != null && caller.IsValid && Config.OtherSettings.ShowBanMenuIfNoTime)
             {
-                DurationMenu.OpenMenu(caller, $"{_localizer?["sa_silence"] ?? "Silence"}: {player.PlayerName}", player,
-                    ManagePlayersMenu.SilenceMenu);
+                DurationMenu.OpenMenu(caller, $"{_localizer?["sa_silence"] ?? "Silence"}: {player.PlayerName}", player, (a, p, t) => ManagePlayersMenu.SilenceMenu(a, p, t, null), null);
                 return;
             }
                 

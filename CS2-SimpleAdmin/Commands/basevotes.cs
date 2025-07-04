@@ -34,7 +34,7 @@ public partial class CS2_SimpleAdmin
             {
                 using (new WithTemporaryCulture(player.GetLanguage()))
                 {
-                    PlayerMenu voteMenu = new(_localizer["sa_admin_vote_menu_title", question],this);
+                    var voteMenu = Helper.CreateMenu(_localizer["sa_admin_vote_menu_title", question]);
                     if (voteMenu == null)
                         return;
                     //ChatMenu voteMenu = new(_localizer!["sa_admin_vote_menu_title", question]);
@@ -44,18 +44,14 @@ public partial class CS2_SimpleAdmin
                         voteMenu.AddItem(command.GetArg(i), Helper.HandleVotes);
                     }
 
-
-                    Helper.PrintToCenterAll(_localizer["sa_admin_vote_message",
-                        caller == null ? _localizer["sa_console"] : caller.PlayerName, question]);
+                    Helper.PrintToCenterAll(_localizer["sa_admin_vote_message", caller == null ? _localizer["sa_console"] : caller.PlayerName, question]);
 
                     player.SendLocalizedMessage(_localizer,
                         "sa_admin_vote_message",
                         caller == null ? _localizer["sa_console"] : caller.PlayerName,
                         question);
 
-                    voteMenu.Display(player, 0);
-
-                    //MenuManager.OpenChatMenu(player, voteMenu);
+                    voteMenu.Display(player, 30);
                 }
             }
 

@@ -1,12 +1,13 @@
 using CounterStrikeSharp.API.Core;
 using CS2_SimpleAdmin.Models;
 using CS2_SimpleAdminApi;
+using CS2MenuManager.API.Class;
 
 namespace CS2_SimpleAdmin.Menus;
 
 public static class ReasonMenu
 {
-    public static void OpenMenu(CCSPlayerController admin, PenaltyType penaltyType, string menuName, CCSPlayerController player, Action<CCSPlayerController, CCSPlayerController, string> onSelectAction)
+    public static void OpenMenu(CCSPlayerController admin, PenaltyType penaltyType, string menuName, CCSPlayerController player, Action<CCSPlayerController, CCSPlayerController, string> onSelectAction, BaseMenu? prevMenu)
     {
         var menu = AdminMenu.CreateMenu(menuName);
 
@@ -26,10 +27,11 @@ public static class ReasonMenu
             menu?.AddItem(reason, (_, _) => onSelectAction(admin, player, reason));
         }
 
-        if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        menu!.PrevMenu = prevMenu;
+        menu.Display(admin, 0);
     }
 
-    public static void OpenMenu(CCSPlayerController admin, PenaltyType penaltyType, string menuName, DisconnectedPlayer player, Action<CCSPlayerController, DisconnectedPlayer, string> onSelectAction)
+    public static void OpenMenu(CCSPlayerController admin, PenaltyType penaltyType, string menuName, DisconnectedPlayer player, Action<CCSPlayerController, DisconnectedPlayer, string> onSelectAction, BaseMenu prevMenu)
     {
         var menu = AdminMenu.CreateMenu(menuName);
 
@@ -47,6 +49,7 @@ public static class ReasonMenu
             menu?.AddItem(reason, (_, _) => onSelectAction(admin, player, reason));
         }
         
-        if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        menu!.PrevMenu = prevMenu;
+        menu.Display(admin, 0);
     }
 }

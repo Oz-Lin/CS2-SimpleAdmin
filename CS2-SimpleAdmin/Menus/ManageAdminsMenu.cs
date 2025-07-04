@@ -1,13 +1,14 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Entities;
+using CS2MenuManager.API.Class;
 using CS2MenuManager.API.Enum;
 
 namespace CS2_SimpleAdmin.Menus;
 
 public static class ManageAdminsMenu
 {
-    public static void OpenMenu(CCSPlayerController admin)
+    public static void OpenMenu(CCSPlayerController admin, BaseMenu prevMenu)
     {
         if (admin.IsValid == false)
             return;
@@ -26,10 +27,10 @@ public static class ManageAdminsMenu
         List<ChatMenuOptionData> options =
         [
             new ChatMenuOptionData(localizer?["sa_admin_add"] ?? "Add Admin",
-                () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_admin_add"] ?? "Add Admin", AddAdminMenu)),
+                () => PlayersMenu.OpenRealPlayersMenu(admin, localizer?["sa_admin_add"] ?? "Add Admin", (p, o) => AddAdminMenu(admin, p, menu),  null, menu)),
             new ChatMenuOptionData(localizer?["sa_admin_remove"] ?? "Remove Admin",
                 () => PlayersMenu.OpenAdminPlayersMenu(admin, localizer?["sa_admin_remove"] ?? "Remove Admin", RemoveAdmin,
-                    player => player != admin && admin.CanTarget(player))),
+                    player => player != admin && admin.CanTarget(player), menu)),
             new ChatMenuOptionData(localizer?["sa_admin_reload"] ?? "Reload Admins", () => ReloadAdmins(admin))
         ];
 
@@ -39,10 +40,11 @@ public static class ManageAdminsMenu
             menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
-        if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        menu!.PrevMenu = prevMenu;
+        menu.Display(admin, 0);
     }
 
-    private static void AddAdminMenu(CCSPlayerController admin, CCSPlayerController player)
+    private static void AddAdminMenu(CCSPlayerController admin, CCSPlayerController player, BaseMenu prevMenu)
     {
         var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_admin_add"] ?? "Add Admin"}: {player.PlayerName}");
 
@@ -53,7 +55,8 @@ public static class ManageAdminsMenu
             menu?.AddItem(adminFlag.Name, (_, _) => { AddAdmin(admin, player, adminFlag.Flag); }, disableOption);
         }
 
-        if (menu != null) AdminMenu.OpenMenu(admin, menu);
+        menu!.PrevMenu = prevMenu;
+        menu.Display(admin, 0);
     }
 
     private static void AddAdmin(CCSPlayerController admin, CCSPlayerController player, string flag)

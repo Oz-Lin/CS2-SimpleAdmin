@@ -1,16 +1,26 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Plugin.Host;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Memory;
 //using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.ValveConstants.Protobuf;
+using CS2_SimpleAdmin.Managers;
 using CS2_SimpleAdminApi;
+using CS2MenuManager;
+using CS2MenuManager.API;
+using CS2MenuManager.API.Class;
+using CS2MenuManager.API.Enum;
+using CS2MenuManager.API.Interface;
+using CS2MenuManager.API.Menu;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -18,16 +28,9 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using CounterStrikeSharp.API.Core.Plugin.Host;
-using CounterStrikeSharp.API.Modules.Entities.Constants;
-using CS2_SimpleAdmin.Managers;
-using CS2MenuManager;
-using CS2MenuManager.API;
-using CS2MenuManager.API.Class;
-using CS2MenuManager.API.Menu;
-using CS2MenuManager.API.Enum;
-using CS2MenuManager.API.Interface;
 using ZLinq;
+using static CS2_SimpleAdmin.CS2_SimpleAdmin;
+using BaseMenu = CS2MenuManager.API.Class.BaseMenu;
 
 
 namespace CS2_SimpleAdmin;
@@ -764,11 +767,15 @@ internal static class Helper
                 commandString]));
     }
 
-    public static IMenu? CreateMenu(string title, Action<CCSPlayerController>? backAction = null)
+    public static BaseMenu CreateMenu(string title)
     {
+        return MenuManager.MenuByType(CS2_SimpleAdmin.Instance.Config.MenuConfigs.MenuType, title, Instance);
+    }
+   // public static IMenu? CreateMenu(string title, Action<CCSPlayerController>? backAction = null)
+   // {
         /*
         var menuType = CS2_SimpleAdmin.Instance.Config.MenuConfigs.MenuType.ToLower();
-        
+
         var menu = menuType switch
         {
             _ when menuType.Equals("selectable", StringComparison.CurrentCultureIgnoreCase) =>
@@ -791,9 +798,9 @@ internal static class Helper
 
         return menu;
         */
-        return new ScreenMenu(title, CS2_SimpleAdmin.Instance);
-    }
-
+    //    return new ScreenMenu(title, CS2_SimpleAdmin.Instance);
+    //}
+    
     internal static IPluginManager? GetPluginManager()
     {
         // Access the singleton instance of Application
