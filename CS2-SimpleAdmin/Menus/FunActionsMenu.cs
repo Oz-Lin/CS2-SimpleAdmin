@@ -2,6 +2,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CS2MenuManager.API.Enum;
 
 namespace CS2_SimpleAdmin.Menus;
 
@@ -99,7 +100,7 @@ public static class FunActionsMenu
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddMenuOption(menuName, (_, _) => { menuOptionData.Action(); }, menuOptionData.Disabled);
+            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
@@ -126,7 +127,7 @@ public static class FunActionsMenu
 
         foreach (var weapon in GetWeaponsCache)
         {
-            menu?.AddMenuOption(weapon.Value.ToString(), (_, _) => { GiveWeapon(admin, player, weapon.Value); });
+            menu?.AddItem(weapon.Value.ToString(), (_, _) => { GiveWeapon(admin, player, weapon.Value); });
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
@@ -171,7 +172,7 @@ public static class FunActionsMenu
 
         foreach (var (optionName, value) in hpArray)
         {
-            menu?.AddMenuOption(optionName, (_, _) => { SetHp(admin, player, value); });
+            menu?.AddItem(optionName, (_, _) => { SetHp(admin, player, value); });
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
@@ -200,7 +201,7 @@ public static class FunActionsMenu
 
         foreach (var (optionName, value) in speedArray)
         {
-            menu?.AddMenuOption(optionName, (_, _) => { SetSpeed(admin, player, value); });
+            menu?.AddItem(optionName, (_, _) => { SetSpeed(admin, player, value); });
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
@@ -227,7 +228,7 @@ public static class FunActionsMenu
 
         foreach (var (optionName, value) in gravityArray)
         {
-            menu?.AddMenuOption(optionName, (_, _) => { SetGravity(admin, player, value); });
+            menu?.AddItem(optionName, (_, _) => { SetGravity(admin, player, value); });
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
@@ -254,7 +255,7 @@ public static class FunActionsMenu
 
         foreach (var (optionName, value) in moneyArray)
         {
-            menu?.AddMenuOption(optionName, (_, _) => { SetMoney(admin, player, value); });
+            menu?.AddItem(optionName, (_, _) => { SetMoney(admin, player, value); });
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);

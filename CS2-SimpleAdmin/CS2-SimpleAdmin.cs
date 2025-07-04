@@ -16,7 +16,7 @@ public partial class CS2_SimpleAdmin : BasePlugin, IPluginConfig<CS2_SimpleAdmin
 {
     internal static CS2_SimpleAdmin Instance { get; private set; } = new();
 
-    public override string ModuleName => "CS2-SimpleAdmin" + (Helper.IsDebugBuild ? " (DEBUG)" : " (RELEASE)");
+    public override string ModuleName => "CS2-SimpleAdmin (Ozlin Branch)" + (Helper.IsDebugBuild ? " (DEBUG)" : " (RELEASE)");
     public override string ModuleDescription => "Simple admin plugin for Counter-Strike 2 :)";
     public override string ModuleAuthor => "daffyy & Dliix66";
     public override string ModuleVersion => "1.7.7-alpha";
@@ -60,15 +60,6 @@ public partial class CS2_SimpleAdmin : BasePlugin, IPluginConfig<CS2_SimpleAdmin
     {
         AddTimer(5.0f, () => ReloadAdmins(null));
 
-        try
-        {
-            MenuApi = MenuCapability.Get();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError("Unable to load required plugins ... \n{exception}", ex.Message);
-        }
-        
         RegisterCommands.InitializeCommands();
     }
 
@@ -121,10 +112,6 @@ public partial class CS2_SimpleAdmin : BasePlugin, IPluginConfig<CS2_SimpleAdmin
 
         if (!string.IsNullOrEmpty(Config.Discord.DiscordLogWebhook))
             DiscordWebhookClientLog = new DiscordManager(Config.Discord.DiscordLogWebhook);
-
-        PluginInfo.ShowAd(ModuleVersion);
-        if (Config.EnableUpdateCheck)
-            Task.Run(async () => await PluginInfo.CheckVersion(ModuleVersion, _logger));
         
         PermissionManager = new PermissionManager(Database);
         BanManager = new BanManager(Database);

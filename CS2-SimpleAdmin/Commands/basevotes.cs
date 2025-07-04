@@ -3,11 +3,12 @@ using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Menu;
-
+using CS2MenuManager.API.Menu;
 namespace CS2_SimpleAdmin;
 
 public partial class CS2_SimpleAdmin
 {
+
     [RequiresPermissions("@css/generic")]
     [CommandHelper(minArgs: 2, usage: "<question> [... options ...]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnVoteCommand(CCSPlayerController? caller, CommandInfo command)
@@ -33,26 +34,26 @@ public partial class CS2_SimpleAdmin
             {
                 using (new WithTemporaryCulture(player.GetLanguage()))
                 {
-                    IMenu? voteMenu = Helper.CreateMenu(_localizer["sa_admin_vote_menu_title", question]);
+                    PlayerMenu voteMenu = new(_localizer["sa_admin_vote_menu_title", question],this);
                     if (voteMenu == null)
                         return;
                     //ChatMenu voteMenu = new(_localizer!["sa_admin_vote_menu_title", question]);
 
                     for (var i = 2; i <= answersCount - 1; i++)
                     {
-                        voteMenu.AddMenuOption(command.GetArg(i), Helper.HandleVotes);
+                        voteMenu.AddItem(command.GetArg(i), Helper.HandleVotes);
                     }
 
-                    voteMenu.PostSelectAction = PostSelectAction.Close;
 
-                    Helper.PrintToCenterAll(_localizer["sa_admin_vote_message", caller == null ? _localizer["sa_console"] : caller.PlayerName, question]);
+                    Helper.PrintToCenterAll(_localizer["sa_admin_vote_message",
+                        caller == null ? _localizer["sa_console"] : caller.PlayerName, question]);
 
                     player.SendLocalizedMessage(_localizer,
                         "sa_admin_vote_message",
                         caller == null ? _localizer["sa_console"] : caller.PlayerName,
                         question);
 
-                    voteMenu.Open(player);
+                    voteMenu.Display(player, 0);
 
                     //MenuManager.OpenChatMenu(player, voteMenu);
                 }
@@ -84,9 +85,11 @@ public partial class CS2_SimpleAdmin
                                 value);
                     }
                 }
+
                 VoteAnswers.Clear();
                 VoteInProgress = false;
             }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
         }
     }
+    
 }

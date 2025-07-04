@@ -55,6 +55,7 @@ public partial class CS2_SimpleAdmin
 
         // Log the command
         if (command == null)
+        
             Helper.LogCommand(caller, $"css_noclip {(string.IsNullOrEmpty(player.PlayerName) ? player.SteamID.ToString() : player.PlayerName)}");
     }
     

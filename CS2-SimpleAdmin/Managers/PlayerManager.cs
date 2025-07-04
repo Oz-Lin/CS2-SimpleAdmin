@@ -27,9 +27,9 @@ public class PlayerManager
         }
 
         var ipAddress = player.IpAddress?.Split(":")[0];
+
         CS2_SimpleAdmin.PlayersInfo[player.UserId.Value] =
             new PlayerInfo(player.UserId.Value, player.Slot, new SteamID(player.SteamID), player.PlayerName, ipAddress);
-        
 
         // if (!player.UserId.HasValue)
         // {

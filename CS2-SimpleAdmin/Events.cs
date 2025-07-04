@@ -175,9 +175,9 @@ public partial class CS2_SimpleAdmin
         if (player == null || !player.IsValid || player.IsBot)
             return HookResult.Continue;
 
-//         if (player.UserId.HasValue && PlayersInfo.TryGetValue(player.UserId.Value, out PlayerInfo? value) &&
-// value.WaitingForKick)
-//             return HookResult.Continue;
+        //         if (player.UserId.HasValue && PlayersInfo.TryGetValue(player.UserId.Value, out PlayerInfo? value) &&
+        // value.WaitingForKick)
+        //             return HookResult.Continue;
         
         new PlayerManager().LoadPlayerData(player);
 
@@ -194,7 +194,6 @@ public partial class CS2_SimpleAdmin
         GodPlayers.Clear();
         SpeedPlayers.Clear();
         GravityPlayers.Clear();
-        
         foreach (var player in PlayersInfo.Values)
         {
             player.DiePosition = null;
@@ -246,8 +245,12 @@ public partial class CS2_SimpleAdmin
             return HookResult.Continue;
         }
         
-        author.SendLocalizedMessage(_localizer, "sa_player_penalty_chat_active", endDateTime.Value.ToString("g", author.GetLanguage()));
+        if (_localizer != null && endDateTime is not null)
+            author.SendLocalizedMessage(_localizer, "sa_player_penalty_chat_active", endDateTime.Value.ToString("g", author.GetLanguage()));
         return HookResult.Stop;
+
+        // um.Recipients.Clear();
+
     }
 
     private HookResult ComamndListenerHandler(CCSPlayerController? player, CommandInfo info)

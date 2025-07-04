@@ -6,7 +6,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Memory;
-using CounterStrikeSharp.API.Modules.Menu;
+//using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.ValveConstants.Protobuf;
 using CS2_SimpleAdminApi;
 using Microsoft.Extensions.Localization;
@@ -21,8 +21,14 @@ using System.Text.RegularExpressions;
 using CounterStrikeSharp.API.Core.Plugin.Host;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CS2_SimpleAdmin.Managers;
-using MenuManager;
+using CS2MenuManager;
+using CS2MenuManager.API;
+using CS2MenuManager.API.Class;
+using CS2MenuManager.API.Menu;
+using CS2MenuManager.API.Enum;
+using CS2MenuManager.API.Interface;
 using ZLinq;
+
 
 namespace CS2_SimpleAdmin;
 
@@ -293,7 +299,7 @@ internal static class Helper
             controller.PrintToCenter(message);
         });
     }
-
+    
     internal static void HandleVotes(CCSPlayerController player, ChatMenuOption option)
     {
         if (!CS2_SimpleAdmin.VoteInProgress)
@@ -302,7 +308,7 @@ internal static class Helper
         option.Disabled = true;
         CS2_SimpleAdmin.VoteAnswers[option.Text]++;
     }
-
+    
     internal static void LogCommand(CCSPlayerController? caller, CommandInfo command)
     {
         if (CS2_SimpleAdmin._localizer == null)
@@ -760,6 +766,7 @@ internal static class Helper
 
     public static IMenu? CreateMenu(string title, Action<CCSPlayerController>? backAction = null)
     {
+        /*
         var menuType = CS2_SimpleAdmin.Instance.Config.MenuConfigs.MenuType.ToLower();
         
         var menu = menuType switch
@@ -783,6 +790,8 @@ internal static class Helper
         };
 
         return menu;
+        */
+        return new ScreenMenu(title, CS2_SimpleAdmin.Instance);
     }
 
     internal static IPluginManager? GetPluginManager()
@@ -797,68 +806,6 @@ internal static class Helper
         return pluginManager;
     }
     
-}
-
-public static class PluginInfo
-{
-    internal static async Task CheckVersion(string localVersion, ILogger logger)
-    {
-        const string versionUrl = "https://raw.githubusercontent.com/daffyyyy/CS2-SimpleAdmin/main/CS2-SimpleAdmin/VERSION";
-        var client = CS2_SimpleAdmin.HttpClient;
-
-        try
-        {
-            var response = await client.GetAsync(versionUrl);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var remoteVersion = await response.Content.ReadAsStringAsync();
-                remoteVersion = remoteVersion.Trim();
-
-                var comparisonResult = string.CompareOrdinal(localVersion, remoteVersion);
-
-                switch (comparisonResult)
-                {
-                    case < 0:
-                        logger.LogWarning("Plugin is outdated! Check https://github.com/daffyyyy/CS2-SimpleAdmin");
-                        break;
-                    case > 0:
-                        logger.LogInformation("Probably dev version detected");
-                        break;
-                    default:
-                        logger.LogInformation("Plugin is up to date");
-                        break;
-                }
-            }
-            else
-            {
-                logger.LogWarning($"Failed to check version. Status Code: {response.StatusCode}");
-            }
-        }
-        catch (HttpRequestException ex)
-        {
-            logger.LogError(ex, "Failed to connect to the version server.");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred while checking version.");
-        }
-    }
-    
-    internal static void ShowAd(string moduleVersion)
-    {
-        Console.WriteLine(" ");
-        Console.WriteLine(" _______  ___   __   __  _______  ___      _______  _______  ______   __   __  ___   __    _  ");
-        Console.WriteLine("|       ||   | |  |_|  ||       ||   |    |       ||   _   ||      | |  |_|  ||   | |  |  | |");
-        Console.WriteLine("|  _____||   | |       ||    _  ||   |    |    ___||  |_|  ||  _    ||       ||   | |   |_| |");
-        Console.WriteLine("| |_____ |   | |       ||   |_| ||   |    |   |___ |       || | |   ||       ||   | |       |");
-        Console.WriteLine("|_____  ||   | |       ||    ___||   |___ |    ___||       || |_|   ||       ||   | |  _    |");
-        Console.WriteLine(" _____| ||   | | ||_|| ||   |    |       ||   |___ |   _   ||       || ||_|| ||   | | | |   |");
-        Console.WriteLine("|_______||___| |_|   |_||___|    |_______||_______||__| |__||______| |_|   |_||___| |_|  |__|");
-        Console.WriteLine("				>> Version: " + moduleVersion);
-        Console.WriteLine("		>> GitHub: https://github.com/daffyyyy/CS2-SimpleAdmin");
-        Console.WriteLine(" ");
-    }
 }
 
 public class SchemaString<TSchemaClass>(TSchemaClass instance, string member)

@@ -3,6 +3,9 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using CS2_SimpleAdminApi;
+using CS2MenuManager.API.Class;
+using CS2MenuManager.API.Enum;
+using CS2MenuManager.API.Menu;
 
 namespace CS2_SimpleAdmin.Menus;
 
@@ -78,19 +81,18 @@ public static class ManagePlayersMenu
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddMenuOption(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled);
+            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
     }
-
     private static void SlapMenu(CCSPlayerController admin, CCSPlayerController player)
     {
         var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_slap"] ?? "Slap"}: {player.PlayerName}");
         List<ChatMenuOptionData> options =
         [
-			// options added in order
-			new ChatMenuOptionData("0 hp", () => ApplySlapAndKeepMenu(admin, player, 0)),
+            // options added in order
+            new ChatMenuOptionData("0 hp", () => ApplySlapAndKeepMenu(admin, player, 0)),
             new ChatMenuOptionData("1 hp", () => ApplySlapAndKeepMenu(admin, player, 1)),
             new ChatMenuOptionData("5 hp", () => ApplySlapAndKeepMenu(admin, player, 5)),
             new ChatMenuOptionData("10 hp", () => ApplySlapAndKeepMenu(admin, player, 10)),
@@ -101,7 +103,7 @@ public static class ManagePlayersMenu
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddMenuOption(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled);
+            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);
@@ -160,7 +162,7 @@ public static class ManagePlayersMenu
                 if (player is { IsValid: true })
                     Ban(admin, player, duration, reason);
                 
-                CS2_SimpleAdmin.MenuApi?.CloseMenu(admin);
+                MenuManager.CloseActiveMenu(admin);
             });
 
         // var menu = AdminMenu.CreateMenu($"{CS2_SimpleAdmin._localizer?["sa_ban"] ?? "Ban"}: {player?.PlayerName}");
@@ -321,7 +323,7 @@ public static class ManagePlayersMenu
         foreach (var menuOptionData in options)
         {
             var menuName = menuOptionData.Name;
-            menu?.AddMenuOption(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled);
+            menu?.AddItem(menuName, (_, _) => { menuOptionData.Action.Invoke(); }, menuOptionData.Disabled ? DisableOption.DisableHideNumber : DisableOption.None);
         }
 
         if (menu != null) AdminMenu.OpenMenu(admin, menu);

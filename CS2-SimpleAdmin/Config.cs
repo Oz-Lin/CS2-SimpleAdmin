@@ -270,12 +270,6 @@ public class CS2_SimpleAdminConfig : BasePluginConfig
     [JsonPropertyName("OtherSettings")]
     public OtherSettings OtherSettings { get; set; } = new();
 
-    [JsonPropertyName("EnableMetrics")]
-    public bool EnableMetrics { get; set; } = true;
-
-    [JsonPropertyName("EnableUpdateCheck")]
-    public bool EnableUpdateCheck { get; set; } = true;
-
     [JsonPropertyName("Timezone")]
     public string Timezone { get; set; } = "UTC";
 
