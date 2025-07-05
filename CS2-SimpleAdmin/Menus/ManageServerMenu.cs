@@ -4,11 +4,39 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Entities;
 using CS2MenuManager.API.Class;
 using CS2MenuManager.API.Enum;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using CounterStrikeSharp.API.Modules.Timers;
+using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
 namespace CS2_SimpleAdmin.Menus;
 
 public static class ManageServerMenu
 {
+    // Add: cache for workshop maps to avoid reading file every time
+    private static Dictionary<string, string>? _workshopMapCache = null;
+
+    // Add: ensure cache is loaded
+    private static void EnsureWorkshopMapCache(string filePath)
+    {
+        if (_workshopMapCache != null) return;
+        _workshopMapCache = new Dictionary<string, string>();
+        if (!File.Exists(filePath)) return;
+        foreach (var line in File.ReadAllLines(filePath))
+        {
+            if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("//")) continue;
+            var parts = line.Split(':');
+            if (parts.Length < 2) continue;
+            var name = parts[0].Trim();
+            var id = parts[1].Trim();
+            // Only take the map name (content after removing spaces)
+            var workshopName = name.Split(' ')[0];
+            _workshopMapCache[workshopName] = id;
+        }
+    }
+
     public static void OpenMenu(CCSPlayerController admin, BaseMenu prevMenu)
     {
         if (admin.IsValid == false)
@@ -73,7 +101,7 @@ public static class ManageServerMenu
 
             foreach (string line in lines)
             {
-                if (string.IsNullOrWhiteSpace(line))
+                if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("//"))
                     continue;
 
                 // Expected format: "map_name (optional info):workshopID"
@@ -87,7 +115,23 @@ public static class ManageServerMenu
 
                 menu.AddItem(mapDisplayName, (player, option) =>
                 {
+                    EnsureWorkshopMapCache(filePath);
+                    if (_workshopMapCache == null || !_workshopMapCache.TryGetValue(workshopName, out var workshopId))
+                    {
+                        admin.PrintToChat($"Can't find Workshop ID for Map {workshopName}");
+                        return;
+                    }
+
+                    // try changelevel first
                     Server.ExecuteCommand($"ds_workshop_changelevel {workshopName}");
+                    // If changelevel failed, use host_workshop_map
+                    admin.PrintToChat($"Trying ds_workshop_changelevel {workshopName}, otherwise host_workshop_map {workshopId} instead.");
+                    // If fails to change after 5s, fallback to host_workshop_map
+                    Timer timer = new Timer(5.0f, () =>
+                    {
+                        Server.ExecuteCommand($"host_workshop_map {workshopId}");
+                    }, TimerFlags.STOP_ON_MAPCHANGE);
+
                 });
             }
         }
