@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CounterStrikeSharp.API.Modules.Timers;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
+using CS2MenuManager.API.Interface;
 
 namespace CS2_SimpleAdmin.Menus;
 
@@ -36,7 +37,7 @@ public static class ManageServerMenu
             _workshopMapCache[workshopName] = id;
         }
     }
-
+    
     public static void OpenMenu(CCSPlayerController admin, BaseMenu prevMenu)
     {
         if (admin.IsValid == false)
@@ -66,7 +67,8 @@ public static class ManageServerMenu
 
         if (hasPlugins)
         {
-            options.Add(new ChatMenuOptionData(localizer?["sa_menu_pluginsmanager_title"] ?? "Manage Plugins", () => admin.ExecuteClientCommandFromServer("css_pluginsmanager")));
+            options.Add(new ChatMenuOptionData(localizer?["sa_menu_pluginsmanager_title"] ?? "Manage Plugins", () => CS2_SimpleAdmin.PluginManagerMenu(admin, menu)));
+            //options.Add(new ChatMenuOptionData(localizer?["sa_menu_pluginsmanager_title"] ?? "Manage Plugins", () => admin.ExecuteClientCommandFromServer("css_pluginsmanager")));
         }
 
         if (hasMap)

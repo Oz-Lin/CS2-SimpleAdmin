@@ -15,8 +15,10 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using CounterStrikeSharp.API.ValveConstants.Protobuf;
 using CS2MenuManager.API.Class;
+using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
 namespace CS2_SimpleAdmin;
 
@@ -992,68 +994,123 @@ public partial class CS2_SimpleAdmin
     {
         if (caller == null)
             return;
-        
+
+        //var pluginManager = Helper.GetPluginManager();
+        //if (pluginManager == null)
+        //{
+        //    Logger.LogError("Unable to access PluginManager.");
+        //    return;
+        //}
+
+        //var getLoadedPluginsMethod = pluginManager.GetType().GetMethod("GetLoadedPlugins", BindingFlags.Public | BindingFlags.Instance);
+        //if (getLoadedPluginsMethod?.Invoke(pluginManager, null) is not IEnumerable plugins)
+        //{
+        //    Logger.LogError("Unable to retrieve plugins.");
+        //    return;
+        //}
+
+        //var pluginsMenu = Helper.CreateMenu(Localizer["sa_menu_pluginsmanager_title"]);
+
+        //foreach (var plugin in plugins)
+        //{
+        //    var pluginType = plugin.GetType();
+
+        //    // Accessing each property with the Type of the plugin
+        //    var pluginId = pluginType.GetProperty("PluginId")?.GetValue(plugin);
+        //    var state = pluginType.GetProperty("State")?.GetValue(plugin)?.ToString();
+        //    var path = pluginType.GetProperty("FilePath")?.GetValue(plugin)?.ToString();
+        //    path = Path.GetFileName(Path.GetDirectoryName(path));
+
+        //    // Access nested properties within "Plugin" (like ModuleName, ModuleVersion, etc.)
+        //    var nestedPlugin = pluginType.GetProperty("Plugin")?.GetValue(plugin);
+        //    if (nestedPlugin == null) continue;
+
+        //    var status = state?.ToUpper() != "UNLOADED" ? "ON" : "OFF";
+        //    var allowedMenuTypes = new[] { "chat", "console" };
+
+        //    //if (!allowedMenuTypes.Contains(Config.MenuConfigs.MenuType) && MenuApi.GetMenuType(caller) >= MenuType.CenterMenu)
+        //    //status = state?.ToUpper() != "UNLOADED" ? "<font color='lime'>ON</font>" : "<font color='red'>OFF</font>";
+        //    var nestedType = nestedPlugin.GetType();
+        //    var moduleName = nestedType.GetProperty("ModuleName")?.GetValue(nestedPlugin)?.ToString() ?? "Unknown";
+        //    var moduleVersion = nestedType.GetProperty("ModuleVersion")?.GetValue(nestedPlugin)?.ToString();
+        //    // var moduleAuthor = nestedType.GetProperty("ModuleAuthor")?.GetValue(nestedPlugin)?.ToString();
+        //    // var moduleDescription = nestedType.GetProperty("ModuleDescription")?.GetValue(nestedPlugin)?.ToString();
+
+        //    pluginsMenu?.AddItem($"({status}) [{moduleName} {moduleVersion}]", (_, _) =>
+        //    {
+        //        if (state?.ToUpper() != "UNLOADED")
+        //        {
+        //            caller.SendLocalizedMessage(Localizer, "sa_menu_pluginsmanager_unloaded", moduleName);
+        //            Server.ExecuteCommand($"css_plugins unload {pluginId}");
+        //        }
+        //        else
+        //        {
+        //            caller.SendLocalizedMessage(Localizer, "sa_menu_pluginsmanager_loaded", moduleName);
+        //            Server.ExecuteCommand($"css_plugins load {path}");
+        //        }
+
+        //        AddTimer(0.1f, () => OnPluginManagerCommand(caller, commandInfo));
+        //    });
+
+        //    // Console.WriteLine($"[#{pluginId}:{state?.ToUpper()}]: \"{moduleName ?? "Unknown"}\" ({moduleVersion ?? "Unknown"}) by {moduleAuthor}");
+        //}
+
+        //pluginsMenu?.Display(caller, 0);
+        PluginManagerMenu(caller, null);
+    }
+
+    internal static void PluginManagerMenu(CCSPlayerController admin, BaseMenu? prevMenu)
+    {
         var pluginManager = Helper.GetPluginManager();
         if (pluginManager == null)
         {
-            Logger.LogError("Unable to access PluginManager.");
+            _logger?.LogError("Unable to access PluginManager.");
             return;
         }
 
         var getLoadedPluginsMethod = pluginManager.GetType().GetMethod("GetLoadedPlugins", BindingFlags.Public | BindingFlags.Instance);
         if (getLoadedPluginsMethod?.Invoke(pluginManager, null) is not IEnumerable plugins)
         {
-            Logger.LogError("Unable to retrieve plugins.");
+            _logger?.LogError("Unable to retrieve plugins.");
             return;
         }
 
-        var pluginsMenu = Helper.CreateMenu(Localizer["sa_menu_pluginsmanager_title"]);
-        
+        var pluginsMenu = Helper.CreateMenu(_localizer?["sa_menu_pluginsmanager_title"] ?? "Manage Plugins");
+
         foreach (var plugin in plugins)
         {
             var pluginType = plugin.GetType();
-
-            // Accessing each property with the Type of the plugin
             var pluginId = pluginType.GetProperty("PluginId")?.GetValue(plugin);
             var state = pluginType.GetProperty("State")?.GetValue(plugin)?.ToString();
             var path = pluginType.GetProperty("FilePath")?.GetValue(plugin)?.ToString();
             path = Path.GetFileName(Path.GetDirectoryName(path));
 
-            // Access nested properties within "Plugin" (like ModuleName, ModuleVersion, etc.)
             var nestedPlugin = pluginType.GetProperty("Plugin")?.GetValue(plugin);
             if (nestedPlugin == null) continue;
-            
-            var status = state?.ToUpper() != "UNLOADED" ? "ON" : "OFF";
-            var allowedMenuTypes = new[] { "chat", "console" };
 
-            //if (!allowedMenuTypes.Contains(Config.MenuConfigs.MenuType) && MenuApi.GetMenuType(caller) >= MenuType.CenterMenu)
-                //status = state?.ToUpper() != "UNLOADED" ? "<font color='lime'>ON</font>" : "<font color='red'>OFF</font>";
+            var status = state?.ToUpper() != "UNLOADED" ? "ON" : "OFF";
             var nestedType = nestedPlugin.GetType();
             var moduleName = nestedType.GetProperty("ModuleName")?.GetValue(nestedPlugin)?.ToString() ?? "Unknown";
             var moduleVersion = nestedType.GetProperty("ModuleVersion")?.GetValue(nestedPlugin)?.ToString();
-            // var moduleAuthor = nestedType.GetProperty("ModuleAuthor")?.GetValue(nestedPlugin)?.ToString();
-            // var moduleDescription = nestedType.GetProperty("ModuleDescription")?.GetValue(nestedPlugin)?.ToString();
 
             pluginsMenu?.AddItem($"({status}) [{moduleName} {moduleVersion}]", (_, _) =>
             {
                 if (state?.ToUpper() != "UNLOADED")
                 {
-                    caller.SendLocalizedMessage(Localizer, "sa_menu_pluginsmanager_unloaded", moduleName);
+                    admin.SendLocalizedMessage(_localizer, "sa_menu_pluginsmanager_unloaded", moduleName);
                     Server.ExecuteCommand($"css_plugins unload {pluginId}");
                 }
                 else
                 {
-                    caller.SendLocalizedMessage(Localizer, "sa_menu_pluginsmanager_loaded", moduleName);
+                    admin.SendLocalizedMessage(_localizer, "sa_menu_pluginsmanager_loaded", moduleName);
                     Server.ExecuteCommand($"css_plugins load {path}");
                 }
-
-                AddTimer(0.1f, () => OnPluginManagerCommand(caller, commandInfo));
+                Timer timer = new Timer(0.1f, () => PluginManagerMenu(admin, prevMenu));
             });
-                
-            // Console.WriteLine($"[#{pluginId}:{state?.ToUpper()}]: \"{moduleName ?? "Unknown"}\" ({moduleVersion ?? "Unknown"}) by {moduleAuthor}");
         }
-        
-        pluginsMenu?.Display(caller, 0);
+
+        pluginsMenu!.PrevMenu = prevMenu;
+        pluginsMenu.Display(admin, 0);
     }
 
     public static void RestartGame(CCSPlayerController? admin)
